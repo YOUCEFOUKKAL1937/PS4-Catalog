@@ -3,227 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كتالوج ألعاب PS4 المعدلة</title>
+    <title>GAMES ZONE | القائمة الكاملة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #0b0e14; color: white; margin: 0; }
         
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #050a14;
-            color: #ffffff;
-            scroll-behavior: smooth;
+        .ps-header { 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070'); 
+            background-size: cover; background-position: center; 
+            border-bottom: 3px solid #25d366; 
         }
 
-        .ps-gradient {
-            background: linear-gradient(135deg, #003791 0%, #001d4c 100%);
+        .game-card { 
+            background: #1a1f29; 
+            border-radius: 10px; 
+            transition: all 0.25s ease; 
+            border: 1px solid #2d3748; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            cursor: pointer; 
         }
 
-        .game-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .game-card:hover { transform: scale(1.03); border-color: #25d366; z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .game-card.selected { border-color: #25d366; background: #064e3b; }
+        /* ستايل خاص للعبة غير المتوفرة */
+        .game-card.unavailable { opacity: 0.6; filter: grayscale(0.5); cursor: not-allowed; }
+        .game-card.unavailable:hover { transform: none; border-color: #ef4444; }
 
-        .game-card:hover {
-            transform: translateY(-10px);
-            border-color: #0072ce;
-            box-shadow: 0 15px 35px rgba(0, 114, 206, 0.25);
-            background: rgba(255, 255, 255, 0.06);
-        }
+        .game-img { width: 100%; aspect-ratio: 1/1.2; object-fit: cover; }
 
-        .search-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
+        .ar-tags { position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 3px; z-index: 20; }
+        .tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); }
+        .tag-dub { background: #0070d1; color: white; }
+        .tag-sub { background: #8b5cf6; color: white; }
 
-        .search-box:focus {
-            border-color: #0072ce;
-            background: rgba(255, 255, 255, 0.1);
-            outline: none;
+        .cart-bar { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: #111827; border-top: 3px solid #25d366; 
+            padding: 1rem; transform: translateY(100%); 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; 
         }
-
-        .badge {
-            font-size: 0.65rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+        .cart-bar.active { transform: translateY(0); }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="pb-32">
 
-    <!-- Header -->
-    <header class="ps-gradient py-16 px-6 text-center shadow-2xl">
-        <div class="container mx-auto">
-            <h1 class="text-4xl md:text-6xl font-black mb-4">مكتبة ألعاب PS4</h1>
-            <p class="text-blue-200 text-lg md:text-xl max-w-2xl mx-auto opacity-90">
-                أضخم تشكيلة من الألعاب المترجمة والمدبلجة. ابحث عن لعبتك المفضلة الآن.
-            </p>
-        </div>
+    <header class="ps-header py-10 text-center">
+        <h1 class="text-5xl font-black italic tracking-tighter">GAMES<span class="text-green-500">ZONE</span></h1>
+        <p class="text-gray-300 mt-2 text-sm font-bold">أضخم مكتبة ألعاب معربة (دبلجة وترجمة)</p>
     </header>
 
-    <!-- Search Area -->
-    <div class="container mx-auto px-6 -mt-10">
-        <div class="max-w-3xl mx-auto relative">
-            <i class="fas fa-search absolute right-5 top-1/2 -translate-y-1/2 text-blue-400 text-xl"></i>
-            <input type="text" id="gameSearch" onkeyup="filterGames()" 
-                placeholder="ابحث عن Call of Duty, Resident Evil, God of War..." 
-                class="search-box w-full py-5 pr-14 pl-8 rounded-2xl text-xl shadow-2xl">
+    <div class="sticky top-0 z-50 bg-[#0b0e14]/95 backdrop-blur-md p-4 shadow-2xl border-b border-gray-800">
+        <div class="max-w-2xl mx-auto relative">
+            <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" id="searchInput" onkeyup="render()" placeholder="ابحث عن لعبة (مثلاً: Resident Evil)..." 
+                class="w-full bg-gray-800 border-2 border-gray-700 p-3 pr-12 rounded-2xl text-white focus:border-green-500 outline-none transition-all">
         </div>
     </div>
 
-    <!-- Stats Bar -->
-    <div class="container mx-auto px-6 mt-12 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex items-center gap-3">
-            <div class="w-2 h-10 bg-blue-600 rounded-full"></div>
-            <h2 class="text-2xl font-bold italic">القائمة المتوفرة</h2>
-        </div>
-        <div class="bg-blue-900/30 border border-blue-500/30 px-6 py-2 rounded-xl">
-            <span class="text-gray-400 ml-2 text-sm">إجمالي الألعاب:</span>
-            <span id="gameCounter" class="text-2xl font-black text-blue-400">0</span>
-        </div>
-    </div>
-
-    <!-- Games Grid -->
-    <main class="container mx-auto px-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="gamesGrid">
-        <!-- JS will populate this -->
+    <main class="container mx-auto px-4 mt-8">
+        <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
     </main>
 
-    <!-- Empty Result -->
-    <div id="noResults" class="hidden text-center py-32">
-        <i class="fas fa-gamepad text-8xl text-gray-800 mb-6"></i>
-        <p class="text-2xl text-gray-500 font-bold">عذراً، اللعبة غير موجودة في القائمة حالياً</p>
+    <div id="cartBar" class="cart-bar flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        <div class="flex items-center gap-4">
+            <div id="count" class="bg-green-500 text-black font-black min-w-[50px] h-12 rounded-xl flex items-center justify-center text-2xl">0</div>
+            <div class="hidden sm:block">
+                <p class="font-bold text-sm">الألعاب المختارة</p>
+                <p id="list" class="text-xs text-gray-400 truncate max-w-xs">لا يوجد ألعاب</p>
+            </div>
+        </div>
+        <button onclick="sendWhatsApp()" class="bg-[#25d366] text-black px-10 py-4 rounded-2xl font-black hover:scale-105 active:scale-95 transition flex items-center gap-3 shadow-lg">
+            <i class="fab fa-whatsapp text-2xl"></i> اطلب الآن
+        </button>
     </div>
 
-    <!-- Whatsapp Contact -->
-    <a href="https://wa.me/YOUR_PHONE_NUMBER" target="_blank" 
-        class="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full shadow-2xl transition-all hover:scale-105 flex items-center gap-3 z-50">
-        <i class="fab fa-whatsapp text-2xl"></i>
-        <span class="font-bold">أطلب ألعابك الآن</span>
-    </a>
-
     <script>
-        const gamesList = [
-            { name: "Call of Duty: Cold War", img: "https://placehold.co/400x550/001d4c/ffffff?text=COD+Cold+War" },
-            { name: "Resident Evil 5", img: "https://placehold.co/400x550/001d4c/ffffff?text=RE+5" },
-            { name: "Resident Evil 8: Village", img: "https://placehold.co/400x550/001d4c/ffffff?text=RE+8+Village" },
-            { name: "Gran Turismo Sport", img: "https://placehold.co/400x550/001d4c/ffffff?text=Gran+Turismo" },
-            { name: "Death Stranding", img: "https://placehold.co/400x550/001d4c/ffffff?text=Death+Stranding" },
-            { name: "The Dark Pictures: Man of Medan", img: "https://placehold.co/400x550/001d4c/ffffff?text=Man+of+Medan" },
-            { name: "The Dark Pictures: Little Hope", img: "https://placehold.co/400x550/001d4c/ffffff?text=Little+Hope" },
-            { name: "The Dark Pictures: House of Ashes", img: "https://placehold.co/400x550/001d4c/ffffff?text=House+of+Ashes" },
-            { name: "Metro Exodus", img: "https://placehold.co/400x550/001d4c/ffffff?text=Metro+Exodus" },
-            { name: "Bloodborne", img: "https://placehold.co/400x550/001d4c/ffffff?text=Bloodborne" },
-            { name: "The Callisto Protocol", img: "https://placehold.co/400x550/001d4c/ffffff?text=The+Callisto" },
-            { name: "Sifu", img: "https://placehold.co/400x550/001d4c/ffffff?text=Sifu" },
-            { name: "Nioh Complete Edition", img: "https://placehold.co/400x550/001d4c/ffffff?text=Nioh" },
-            { name: "The Evil Within 2", img: "https://placehold.co/400x550/001d4c/ffffff?text=Evil+Within+2" },
-            { name: "Hogwarts Legacy", img: "https://placehold.co/400x550/001d4c/ffffff?text=Hogwarts+Legacy" },
-            { name: "Cyberpunk 2077", img: "https://placehold.co/400x550/001d4c/ffffff?text=Cyberpunk" },
-            { name: "Watch Dogs", img: "https://placehold.co/400x550/001d4c/ffffff?text=Watch+Dogs" },
-            { name: "Dragon Ball Z: Kakarot", img: "https://placehold.co/400x550/001d4c/ffffff?text=Dragon+Ball" },
-            { name: "Dead Island", img: "https://placehold.co/400x550/001d4c/ffffff?text=Dead+Island" },
-            { name: "Just Cause 4", img: "https://placehold.co/400x550/001d4c/ffffff?text=Just+Cause+4" },
-            { name: "Ghost Recon", img: "https://placehold.co/400x550/001d4c/ffffff?text=Ghost+Recon" },
-            { name: "A Way Out", img: "https://placehold.co/400x550/001d4c/ffffff?text=A+Way+Out" },
-            { name: "Outlast 2", img: "https://placehold.co/400x550/001d4c/ffffff?text=Outlast+2" },
-            { name: "Call of Duty: WWII", img: "https://placehold.co/400x550/001d4c/ffffff?text=COD+WWII" },
-            { name: "EA FC 25/26", img: "https://placehold.co/400x550/001d4c/ffffff?text=FC+26" },
-            { name: "Ghost of Tsushima", img: "https://placehold.co/400x550/001d4c/ffffff?text=Ghost+of+Tsushima" },
-            { name: "God of War Ragnarök", img: "https://placehold.co/400x550/001d4c/ffffff?text=GOW+Ragnarok" },
-            { name: "God of War 3 Remastered", img: "https://placehold.co/400x550/001d4c/ffffff?text=GOW+3" },
-            { name: "Days Gone", img: "https://placehold.co/400x550/001d4c/ffffff?text=Days+Gone" },
-            { name: "The Last of Us Part I", img: "https://placehold.co/400x550/001d4c/ffffff?text=TLOU+1" },
-            { name: "The Last of Us Part II", img: "https://placehold.co/400x550/001d4c/ffffff?text=TLOU+2" },
-            { name: "Uncharted 4: A Thief's End", img: "https://placehold.co/400x550/001d4c/ffffff?text=Uncharted+4" },
-            { name: "Uncharted: Lost Legacy", img: "https://placehold.co/400x550/001d4c/ffffff?text=Uncharted+5" },
-            { name: "Horizon Forbidden West", img: "https://placehold.co/400x550/001d4c/ffffff?text=Horizon+West" },
-            { name: "Resident Evil 2 Remake", img: "https://placehold.co/400x550/001d4c/ffffff?text=RE+2" },
-            { name: "Resident Evil 3 Remake", img: "https://placehold.co/400x550/001d4c/ffffff?text=RE+3" },
-            { name: "Resident Evil 4 Remake", img: "https://placehold.co/400x550/001d4c/ffffff?text=RE+4" },
-            { name: "Resident Evil 7: Biohazard", img: "https://placehold.co/400x550/001d4c/ffffff?text=RE+7" },
-            { name: "WWE 2K25", img: "https://placehold.co/400x550/001d4c/ffffff?text=WWE+2K25" },
-            { name: "Mafia 1: Definitive", img: "https://placehold.co/400x550/001d4c/ffffff?text=Mafia+1" },
-            { name: "Mafia 2: Definitive", img: "https://placehold.co/400x550/001d4c/ffffff?text=Mafia+2" },
-            { name: "COD: Modern Warfare", img: "https://placehold.co/400x550/001d4c/ffffff?text=MW+2019" },
-            { name: "Need for Speed", img: "https://placehold.co/400x550/001d4c/ffffff?text=NFS" },
-            { name: "Sonic Frontiers", img: "https://placehold.co/400x550/001d4c/ffffff?text=Sonic" },
-            { name: "COD: Modern Warfare II", img: "https://placehold.co/400x550/001d4c/ffffff?text=MW+II" },
-            { name: "COD: Modern Warfare III", img: "https://placehold.co/400x550/001d4c/ffffff?text=MW+III" },
-            { name: "COD: Black Ops 6", img: "https://placehold.co/400x550/001d4c/ffffff?text=Black+Ops+6" },
-            { name: "COD: Vanguard", img: "https://placehold.co/400x550/001d4c/ffffff?text=Vanguard" },
-            { name: "COD: Advanced Warfare", img: "https://placehold.co/400x550/001d4c/ffffff?text=Advanced" },
-            { name: "Alan Wake 2", img: "https://placehold.co/400x550/001d4c/ffffff?text=Alan+Wake" },
-            { name: "The Witcher 3", img: "https://placehold.co/400x550/001d4c/ffffff?text=The+Witcher" },
-            { name: "PES 26 Patch", img: "https://placehold.co/400x550/001d4c/ffffff?text=PES+26" },
-            { name: "Assassin's Creed: Valhalla", img: "https://placehold.co/400x550/001d4c/ffffff?text=Valhalla" },
-            { name: "Shadow of the Tomb Raider", img: "https://placehold.co/400x550/001d4c/ffffff?text=Tomb+Raider+S" },
-            { name: "Rise of the Tomb Raider", img: "https://placehold.co/400x550/001d4c/ffffff?text=Tomb+Raider+R" },
-            { name: "Tomb Raider: Definitive Edition", img: "https://placehold.co/400x550/001d4c/ffffff?text=Tomb+Raider+D" },
-            { name: "Street Fighter 6", img: "https://placehold.co/400x550/001d4c/ffffff?text=Street+Fighter" },
-            { name: "Red Dead Redemption 2", img: "https://placehold.co/400x550/001d4c/ffffff?text=RDR+2" },
-            { name: "GTA V (5)", img: "https://placehold.co/400x550/001d4c/ffffff?text=GTA+V" },
-            { name: "Spider-Man", img: "https://placehold.co/400x550/001d4c/ffffff?text=Spider+Man" },
-            { name: "Sekiro: Shadows Die Twice", img: "https://placehold.co/400x550/001d4c/ffffff?text=Sekiro" },
-            { name: "Elden Ring", img: "https://placehold.co/400x550/001d4c/ffffff?text=Elden+Ring" },
-            { name: "Detroit: Become Human", img: "https://placehold.co/400x550/001d4c/ffffff?text=Detroit" },
-            { name: "Battlefield 1", img: "https://placehold.co/400x550/001d4c/ffffff?text=Battlefield+1" },
-            { name: "Battlefield 4", img: "https://placehold.co/400x550/001d4c/ffffff?text=Battlefield+4" },
-            { name: "Battlefield V", img: "https://placehold.co/400x550/001d4c/ffffff?text=Battlefield+V" },
-            { name: "Onimusha: Warlords", img: "https://placehold.co/400x550/001d4c/ffffff?text=Onimusha" },
-            { name: "A Plague Tale: Innocence", img: "https://placehold.co/400x550/001d4c/ffffff?text=Plague+Tale+1" },
-            { name: "A Plague Tale: Requiem", img: "https://placehold.co/400x550/001d4c/ffffff?text=Plague+Tale+2" },
-            { name: "Senua's Saga: Hellblade", img: "https://placehold.co/400x550/001d4c/ffffff?text=Senua" }
+        // تم إضافة خاصية available: true (متوفر) أو false (غير متوفر) لكل لعبة
+        const games = [
+             { name: "Red Dead Redemption 2", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201810/0515/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "The Witcher 3: Wild Hunt", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202211/2311/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "God of War III Remastered", loc: 'none', available: false, img: "https://image.api.playstation.com/vulcan/ap/rnd/201505/1915/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "God of War Ragnarök", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202207/1210/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Ghost of Tsushima", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202106/2322/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "The Last of Us Part I", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202206/0720/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "The Last of Us Part II", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202003/0420/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Uncharted 4", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202112/0118/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Uncharted 5", loc: 'both', available: false, img: "https://image.api.playstation.com/vulcan/ap/rnd/202112/0118/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Horizon Forbidden West", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202107/3100/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Spider-Man 2", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202306/1219/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Hogwarts Legacy", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202211/0714/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Cyberpunk 2077", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202111/3013/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "GTA V", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202203/0114/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Mafia I", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202005/1915/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Mafia II", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202005/1915/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Watch Dogs: Legion", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202009/1614/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Days Gone", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201901/1522/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Assassin's Creed Valhalla", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202008/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Just Cause 4", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201811/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Resident Evil 2 Remake", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202206/0311/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Resident Evil 3 Remake", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202206/0311/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Resident Evil 4 Remake", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202210/0713/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Resident Evil 5", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202206/0311/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Resident Evil 7: Biohazard", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202206/0311/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Resident Evil 8: Village", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202101/0812/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "The Evil Within 2", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201708/1715/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Alan Wake 2", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202305/2314/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "The Callisto Protocol", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202210/2816/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Dead Island 2", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202208/2311/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Outlast 2", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201704/1211/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "A Plague Tale: Innocence", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201904/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "A Plague Tale: Requiem", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202206/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Metro Exodus", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202102/1012/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Call of Duty: Modern Warfare I", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202011/0402/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Call of Duty: Modern Warfare II", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202206/0816/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Call of Duty: Modern Warfare III", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202308/1420/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Call of Duty: Cold War", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202008/2517/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Call of Duty: Black Ops 6", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202405/2221/3c11438903c7340d8977c229.png" },
+             { name: "Call of Duty: WW II", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202011/0402/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Call of Duty: Vanguard", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202108/1718/XhIeZ9T9t9V8YvP9t9V8YvP.png" },           
+             { name: "Call of Duty: Advanced Warfare", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202011/0402/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Battlefield 1", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201605/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Battlefield 4", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201310/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Battlefield V", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201808/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Ghost Recon: Breakpoint", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201909/1214/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Elden Ring", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202110/2000/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Sekiro: Shadows Die Twice", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201902/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Bloodborne", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201503/1216/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Nioh Complete Edition", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202011/1310/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Sifu", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202112/0315/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Onimusha Warlords", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201811/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "EA Sports FC 26", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202407/1714/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "PES 26", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202407/1714/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "WWE 2K24", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202401/1614/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Gran Turismo 7", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202109/1321/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Need For Speed Unbound", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202210/1110/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Street Fighter 6", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202212/0814/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Detroit: Become Human", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201805/1614/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "The Dark Pictures: Man of Medan", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202008/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "The Dark Pictures: Little Hope", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202008/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "The Dark Pictures: House of Ashes", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202106/0714/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Death Stranding", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202107/0114/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Senua's Saga: Hellblade II", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202404/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "A Way Out", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201802/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Shadow of the Tomb Raider", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201808/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Rise of the Tomb Raider", loc: 'both', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201608/1412/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             { name: "Tomb Raider Definitive", loc: 'none', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201401/1412/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Sonic Frontiers", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/202208/2311/XhIeZ9T9t9V8YvP9t9V8YvP.png" },
+             { name: "Dragon Ball Z: Kakarot", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201911/1211/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
+             
+             { name: "hitman 3", loc: 'subtitled', available: true, img: "https://image.api.playstation.com/vulcan/ap/rnd/201911/1211/S9Yv8YvP9t9V8YvP9t9V8YvP.png" },
         ];
 
-        function displayGames(list) {
-            const grid = document.getElementById('gamesGrid');
-            const counter = document.getElementById('gameCounter');
-            const noResults = document.getElementById('noResults');
-            
+        let cart = new Set();
+
+        function render() {
+            const grid = document.getElementById('gameGrid');
+            const term = document.getElementById('searchInput').value.toLowerCase();
             grid.innerHTML = '';
-            counter.innerText = list.length;
+            
+            const filtered = games.filter(g => g.name.toLowerCase().includes(term));
 
-            if (list.length === 0) {
-                noResults.classList.remove('hidden');
-            } else {
-                noResults.classList.add('hidden');
-                list.forEach(game => {
-                    const card = `
-                        <div class="game-card rounded-2xl overflow-hidden p-3 group">
-                            <div class="relative overflow-hidden rounded-xl mb-3">
-                                <img src="${game.img}" alt="${game.name}" 
-                                    class="w-full h-48 md:h-64 object-cover transition-transform group-hover:scale-110">
-                                <div class="absolute top-2 left-2 flex flex-col gap-1">
-                                    <span class="badge bg-green-500 text-white">عربي</span>
-                                    <span class="badge bg-blue-600 text-white">4K</span>
-                                </div>
-                            </div>
-                            <h3 class="text-sm md:text-base font-bold text-gray-100 line-clamp-2 min-h-[3rem] text-center">
-                                ${game.name}
-                            </h3>
-                            <button class="w-full mt-3 bg-blue-600 hover:bg-blue-500 py-2 rounded-lg text-xs font-bold transition-colors">
-                                طلب اللعبة
-                            </button>
+            filtered.forEach(game => {
+                const isSelected = cart.has(game.name);
+                const isAvailable = game.available !== false; // القيمة الافتراضية متوفر
+
+                const div = document.createElement('div');
+                // إضافة كلاس 'unavailable' إذا كانت اللعبة غير متوفرة
+                div.className = `game-card ${isSelected ? 'selected' : ''} ${!isAvailable ? 'unavailable' : ''}`;
+                
+                // تعديل الضغطة: إذا كانت غير متوفرة لا تفعل شيئاً
+                div.onclick = () => {
+                    if (isAvailable) {
+                        toggleGame(game.name);
+                    } else {
+                        alert("عذراً، هذه اللعبة غير متوفرة حالياً في المخزن.");
+                    }
+                };
+
+                // بناء شارات التعريب
+                let tagsHTML = '<div class="ar-tags">';
+                if (game.loc === 'both' || game.loc === 'dubbed') {
+                    tagsHTML += `<span class="tag tag-dub">دبلجة</span>`;
+                }
+                if (game.loc === 'both' || game.loc === 'subtitled') {
+                    tagsHTML += `<span class="tag tag-sub">ترجمة</span>`;
+                }
+                if (game.loc === 'none') {
+                    tagsHTML += `<span class="tag bg-gray-600">English</span>`;
+                }
+                tagsHTML += '</div>';
+
+                // منطق عرض حالة التوفر في الأسفل
+                const availabilityStatus = isAvailable 
+                    ? `<span class="text-[9px] text-green-400 font-bold"><i class="fas fa-check"></i> متوفر</span>`
+                    : `<span class="text-[9px] text-red-500 font-bold"><i class="fas fa-times-circle"></i> غير متوفر</span>`;
+
+                div.innerHTML = `
+                    ${tagsHTML}
+                    <img src="${game.img}" class="game-img" onerror="this.src='https://via.placeholder.com/300x400/1a1f29/white?text=GAME+IMAGE'">
+                    <div class="p-3">
+                        <h3 class="text-[10px] sm:text-[12px] font-black h-8 overflow-hidden leading-tight">${game.name}</h3>
+                        <div class="flex justify-between items-center mt-2">
+                            ${availabilityStatus}
+                            <i class="fas ${isSelected ? 'fa-check-circle text-white' : 'fa-plus-circle text-gray-500'} ${!isAvailable ? 'hidden' : ''}"></i>
                         </div>
-                    `;
-                    grid.innerHTML += card;
-                });
-            }
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+            updateCart();
         }
 
-        function filterGames() {
-            const term = document.getElementById('gameSearch').value.toLowerCase();
-            const filtered = gamesList.filter(g => g.name.toLowerCase().includes(term));
-            displayGames(filtered);
+        function toggleGame(name) {
+            if (cart.has(name)) cart.delete(name);
+            else cart.add(name);
+            render();
         }
 
-        // Initialize display
-        window.onload = () => displayGames(gamesList);
+        function updateCart() {
+            const bar = document.getElementById('cartBar');
+            document.getElementById('count').innerText = cart.size;
+            document.getElementById('list').innerText = Array.from(cart).join(' ، ') || "لا يوجد ألعاب";
+            cart.size > 0 ? bar.classList.add('active') : bar.classList.remove('active');
+        }
+
+        function sendWhatsApp() {
+            if (cart.size === 0) return;
+            const text = `طلب ألعاب جديد 🎮:\n\nالألعاب المختارة:\n✅ ` + Array.from(cart).join('\n✅ ') + `\n\nإجمالي الألعاب: ${cart.size}\nالمصدر: متجر GamesZone`;
+            window.open(`https://wa.me/213669066461?text=${encodeURIComponent(text)}`);
+        }
+
+        window.onload = render;
     </script>
 </body>
 </html>
